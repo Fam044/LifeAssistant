@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("android.extensions")
+    kotlin("kapt")
 }
 android {
     compileSdkVersion(AppConfig.compileSdkVersion)
@@ -14,6 +15,12 @@ android {
         versionName=AppConfig.versionName
 
         consumerProguardFiles("consumer-rules.pro")
+
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME" , project.name)
+            }
+        }
     }
 
     //编译类型
@@ -32,10 +39,18 @@ android {
 
 dependencies {
     api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    //Kotlin基础库
     api(DependenciesConfig.STD_LIB)
+    //Android标准库
     api(DependenciesConfig.APP_COMPAT)
+    //Kotlin核心库
     api(DependenciesConfig.KTX_CORE)
+    //EventBus
     api(DependenciesConfig.EVENT_BUS)
+    //ARouter
+    api(DependenciesConfig.AROUTER)
+    //运行时注解
+    kapt(DependenciesConfig.AROUTER_COMPILER)
 
     api(project(":lib_voice"))
     api(project(":lib_network"))

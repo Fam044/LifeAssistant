@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/AiVoiceApp/app/src/main/res/layout/activity_main.xml" value="0.27395833333333336" />
         <entry key="..\:/AndroidStudioProjects/AiVoiceApp/module_app_manager/src/main/res/layout/activity_app_manager.xml" value="0.16666666666666666" />
         <entry key="..\:/AndroidStudioProjects/AiVoiceApp/module_constellation/src/main/res/layout/activity_constellation.xml" value="0.16666666666666666" />
         <entry key="..\:/AndroidStudioProjects/AiVoiceApp/module_developer/src/main/res/layout/activity_developer.xml" value="0.16666666666666666" />

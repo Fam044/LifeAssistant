@@ -10,12 +10,12 @@ import java.util.*
 object EventManager {
 
     //注册
-    fun register(subscriber: Objects){
+    fun register(subscriber: Any){
         EventBus.getDefault().register(subscriber)
     }
 
     //解绑
-    fun unRegister(subscriber: Objects){
+    fun unRegister(subscriber: Any){
         EventBus.getDefault().unregister(subscriber)
     }
 

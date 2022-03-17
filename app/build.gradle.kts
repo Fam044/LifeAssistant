@@ -3,6 +3,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+    kotlin("kapt")
 }
 //Android属性
 android {
@@ -15,6 +16,13 @@ android {
         targetSdkVersion(AppConfig.targetSdkVersion)
         versionCode=AppConfig.versionCode
         versionName=AppConfig.versionName
+
+        //ARouter
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME" , project.name)
+            }
+        }
     }
 
     //签名配置
@@ -79,4 +87,6 @@ dependencies {
         implementation(project(":module_voice_setting"))
         implementation(project(":module_weather"))
     }
+    //运行时注解
+    kapt(DependenciesConfig.AROUTER_COMPILER)
 }

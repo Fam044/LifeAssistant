@@ -6,6 +6,7 @@ plugins {
     }
     kotlin("android")
     kotlin("android.extensions")
+    kotlin("kapt")
     id("kotlin-android")
 }
 android {
@@ -23,6 +24,13 @@ android {
         versionName=AppConfig.versionName
 
         consumerProguardFiles("consumer-rules.pro")
+
+        //ARouter
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME" , project.name)
+            }
+        }
     }
 
     //编译类型
@@ -54,4 +62,6 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":lib_base"))
+    //运行时注解
+    kapt(DependenciesConfig.AROUTER_COMPILER)
 }

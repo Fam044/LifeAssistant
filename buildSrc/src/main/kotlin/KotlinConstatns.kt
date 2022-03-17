@@ -37,12 +37,15 @@ object DependenciesConfig{
     const val KTX_CORE = "androidx.core:core-ktx:1.2.0"
     // EventBus
     const val EVENT_BUS = "org.greenrobot:eventbus:3.2.0"
+    //ARouter
+    const val AROUTER = "com.alibaba:arouter-api:1.5.2"
+    const val AROUTER_COMPILER = "com.alibaba:arouter-compiler:1.5.2"
 }
 
 // Module配置
 object ModuleConfig{
     // 模块是否为App
-    var isApp = true
+    var isApp = false
 
     // 包名
     const val MODULE_APP_MANAGER = "com.imooc.module_app_manager"
