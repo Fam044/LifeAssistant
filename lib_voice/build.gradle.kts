@@ -31,5 +31,9 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    api(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    //百度ASR库
+    api(files("libs/bdasr.jar"))
+    //百度TTS库
+    api(files("libs/bdtts.jar"))
 }

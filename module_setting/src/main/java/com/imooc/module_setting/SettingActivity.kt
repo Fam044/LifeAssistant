@@ -8,8 +8,19 @@ import com.imooc.lib_base.helper.ARouterHelper
 
 @Route(path = ARouterHelper.PATH_SETTING)
 class SettingActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setting)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_setting
+    }
+
+    override fun getTitleText(): String {
+        return getString(com.imooc.lib_base.R.string.app_title_system_setting)
+    }
+
+    override fun initView() {
+
+    }
+
+    override fun isShowBack(): Boolean {
+        return true
     }
 }

@@ -51,6 +51,15 @@ dependencies {
     api(DependenciesConfig.AROUTER)
     //运行时注解
     kapt(DependenciesConfig.AROUTER_COMPILER)
+    //RecyclerView
+    api(DependenciesConfig.RECYCLERVIEW)
+    //AndPermissions
+    api(DependenciesConfig.AND_PERMISSIONS)
+    //ViewPager
+    api(DependenciesConfig.VIEWPAGER)
+    api(DependenciesConfig.MATERIAL)
+    //Lottie
+    api(DependenciesConfig.LOTTIE)
 
     api(project(":lib_voice"))
     api(project(":lib_network"))

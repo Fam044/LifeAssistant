@@ -40,6 +40,18 @@ object DependenciesConfig{
     //ARouter
     const val AROUTER = "com.alibaba:arouter-api:1.5.2"
     const val AROUTER_COMPILER = "com.alibaba:arouter-compiler:1.5.2"
+    //RecyclerView
+    const val RECYCLERVIEW = "androidx.recyclerview:recyclerview:1.2.0-alpha01"
+    //Permissions
+    const val AND_PERMISSIONS = "com.yanzhenjie:permission:2.0.3"
+    //Retrofit
+    const val RETROFIT = "com.squareup.retrofit2:retrofit:2.8.1"
+    const val RETROFIT_GSON = "com.squareup.retrofit2:converter-gson:2.8.1"
+    //ViewPager
+    const val VIEWPAGER = "com.zhy:magic-viewpager:1.0.1"
+    const val MATERIAL = "com.google.android.material:material:1.0.0"
+    //Lottie
+    const val LOTTIE = "com.airbnb.android:lottie:3.4.0"
 }
 
 // Module配置

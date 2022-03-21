@@ -4,4 +4,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--  语速  -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="5dp"
+        android:text="语速"
+        android:textColor="@color/white"/>
+
+    <SeekBar
+        android:id="@+id/bar_voice_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"/>
+
+    <!--  音量  -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="5dp"
+        android:text="音量"
+        android:textColor="@color/white"/>
+
+    <SeekBar
+        android:id="@+id/bar_voice_volume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"/>
+
+    <!--  发音人  -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="5dp"
+        android:text="发音人"
+        android:textColor="@color/white"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/rv_voice_people"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试"
+        android:id="@+id/btn_test"/>
 </LinearLayout>

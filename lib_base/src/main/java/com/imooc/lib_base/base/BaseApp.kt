@@ -1,17 +1,25 @@
 package com.imooc.lib_base.base
 
 import android.app.Application
+import android.content.Intent
 import com.imooc.lib_base.helper.ARouterHelper
+import com.imooc.lib_base.helper.NotificationHelper
+import com.imooc.lib_base.service.InitService
+import com.imooc.lib_base.utils.SpUtils
+import com.imooc.lib_voice.manager.VoiceManager
 
 /**
  * Filename: BaseApp
  * Profile: 基类APP
  */
-class BaseApp : Application(){
+open class BaseApp : Application(){
 
     override fun onCreate() {
         super.onCreate()
 
+
         ARouterHelper.initHelper(this)
+        NotificationHelper.initHelper(this)
+        startService(Intent(this, InitService::class.java))
     }
 }

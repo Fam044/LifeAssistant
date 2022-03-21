@@ -8,8 +8,19 @@ import com.imooc.lib_base.helper.ARouterHelper
 
 @Route(path = ARouterHelper.PATH_APP_MANAGER)
 class AppManagerActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_app_manager)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_app_manager
+    }
+
+    override fun getTitleText(): String {
+        return getString(com.imooc.lib_base.R.string.app_title_app_manager)
+    }
+
+    override fun initView() {
+
+    }
+
+    override fun isShowBack(): Boolean {
+        return true
     }
 }
