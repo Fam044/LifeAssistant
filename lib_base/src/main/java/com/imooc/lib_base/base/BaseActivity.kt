@@ -73,6 +73,17 @@ abstract class BaseActivity : AppCompatActivity(){
         return true
     }
 
+    //检查多个权限
+    protected fun checkPermission(permission: Array<String>):Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            permission.forEach {
+                if (checkSelfPermission(it) == PackageManager.PERMISSION_DENIED)
+                    return false
+            }
+        }
+        return true
+    }
+
     //请求权限
     protected fun requestPermission(permission: Array<String>, granted: Action<List<String>>){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){

@@ -33,8 +33,11 @@ object WordsTools {
         return randomArray(noSupportArray)
     }
 
-
     private fun randomArray(array: Array<String>): String {
         return array[Random.nextInt(array.size)]
+    }
+
+    fun randomInt(maxSize: Int): Int{
+        return Random.nextInt(maxSize)
     }
 }

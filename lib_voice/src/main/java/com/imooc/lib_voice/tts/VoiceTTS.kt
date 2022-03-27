@@ -115,7 +115,6 @@ object VoiceTTS : SpeechSynthesizerListener {
 
     //接口
     interface OnTTSResultListener{
-
         //播放结束
         fun ttsEnd()
     }

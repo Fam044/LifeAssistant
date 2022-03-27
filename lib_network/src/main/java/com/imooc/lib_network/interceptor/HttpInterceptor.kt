@@ -19,10 +19,10 @@ class HttpInterceptor:Interceptor {
         if (request.method() == "GET"){
             Log.i(tag, request.url().toString())
         }
-        Log.i(tag, "===============RESPONSE==============")
-        response.body()?.let {
-            Log.i(tag, it.string())
-        }
+//        Log.i(tag, "===============RESPONSE==============")
+//        response.body()?.let {
+//            Log.i(tag, it.string())
+//        }
 
         return response
     }

@@ -1,4 +1,4 @@
-package com.imooc.module_joke
+package com.imooc.module_joke.base
 
 import com.imooc.lib_base.base.BaseApp
 

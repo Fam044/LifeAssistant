@@ -16,6 +16,7 @@ import com.imooc.lib_base.base.BaseActivity
 import com.imooc.lib_base.base.adapter.BasePagerAdapter
 import com.imooc.lib_base.helper.ARouterHelper
 import com.imooc.lib_base.helper.func.AppHelper
+import com.imooc.lib_base.helper.func.ContactHelper
 import com.yanzhenjie.permission.Action
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
@@ -24,6 +25,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : BaseActivity() {
+
+    //权限
+    val permission = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS)
 
     private val mList = ArrayList<MainListData>()
     private val mListView = ArrayList<View>()
@@ -37,12 +41,12 @@ class MainActivity : BaseActivity() {
     }
 
     override fun initView() {
+
         //动态权限
-        if (checkPermission(Manifest.permission.RECORD_AUDIO)){
+        if (checkPermission(permission)){
             linkService()
         }else{
-            requestPermission(arrayOf(Manifest.permission.RECORD_AUDIO)
-            ) { linkService() }
+            requestPermission(permission, Action<List<String>> { linkService() })
         }
 
         //窗口权限
@@ -108,6 +112,8 @@ class MainActivity : BaseActivity() {
 
     //连接服务
     private fun linkService(){
+        //读取联系人
+        ContactHelper.initHelper(this)
         startService(Intent(this, VoiceService::class.java))
     }
 
