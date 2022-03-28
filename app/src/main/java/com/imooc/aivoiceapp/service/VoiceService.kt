@@ -25,6 +25,7 @@ import com.imooc.lib_base.helper.func.ContactHelper
 import com.imooc.lib_base.utils.L
 import com.imooc.lib_network.HttpManager
 import com.imooc.lib_network.bean.JokeOneData
+import com.imooc.lib_network.bean.RobotData
 import com.imooc.lib_voice.engine.VoiceEngineAnalyze
 import com.imooc.lib_voice.impl.OnAsrResultListener
 import com.imooc.lib_voice.impl.OnNluResultListener
@@ -328,6 +329,40 @@ class VoiceService: Service(), OnNluResultListener {
             }
         })
         ARouterHelper.startActivity(ARouterHelper.PATH_CONSTELLATION, "name", name)
+    }
+
+    override fun aiRobot(text: String) {
+        //请求机器人回答
+        HttpManager.aiRobotChat(text, object : Callback<RobotData>{
+            override fun onResponse(
+                call: Call<RobotData>,
+                response: Response<RobotData>
+            ) {
+                L.i("机器人结果" + response.body().toString())
+                if (response.isSuccessful){
+                    response.body()?.let {
+                        if (it.intent.code == 10004){
+                            //回答
+                            if (it.results.isEmpty()){
+                                addAiText(WordsTools.noAnswerWords())
+                                hideWindow()
+                            }else{
+                                addAiText(it.results[0].values.text)
+                            }
+                        }else{
+                            addAiText(WordsTools.noAnswerWords())
+                            hideWindow()
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<RobotData>, t: Throwable) {
+                addAiText(WordsTools.noAnswerWords())
+                hideWindow()
+            }
+
+        })
     }
 
 

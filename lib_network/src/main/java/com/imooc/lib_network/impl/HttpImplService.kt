@@ -1,12 +1,14 @@
 package com.imooc.lib_network.impl
 
+import com.imooc.lib_network.HttpManager
 import com.imooc.lib_network.bean.*
 import com.imooc.lib_network.http.HttpUrl
+import okhttp3.RequestBody
+import okhttp3.Response
 
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface HttpImplService {
 
@@ -58,4 +60,9 @@ interface HttpImplService {
     fun getWeather(@Query("city")city: String,
                    @Query("key")key: String
     ): Call<ResponseBody>
+
+    //=======================机器人===========================
+    @Headers(HttpManager.JSON)
+    @POST(HttpUrl.ROBOT_ACTION)
+    fun aiRobot(@Body requestBody: RequestBody): Call<RobotData>
 }

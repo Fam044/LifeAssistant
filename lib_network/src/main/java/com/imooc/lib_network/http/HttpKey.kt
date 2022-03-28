@@ -10,4 +10,7 @@ object HttpKey {
 
     //星座
     const val CONS_TELL_KEY = "b741ebbef0444b9dfddf0190d5706ebd"
+
+    //机器人
+    const val ROBOT_KEY = "0b9768451a6c41dfb9a5d91a81602cfb"
 }

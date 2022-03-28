@@ -52,6 +52,10 @@ interface OnNluResultListener {
     //星座详情
     fun conTellInfo(name: String)
 
+    //==================机器人====================
+    //机器人
+    fun aiRobot(text: String)
+
     //查询天气
     fun queryWeather()
 

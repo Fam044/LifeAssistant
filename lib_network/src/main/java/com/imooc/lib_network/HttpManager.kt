@@ -1,14 +1,16 @@
 package com.imooc.lib_network
 
+import android.util.Log
 import com.imooc.lib_network.bean.*
 import com.imooc.lib_network.http.HttpKey
 import com.imooc.lib_network.http.HttpUrl
 import com.imooc.lib_network.impl.HttpImplService
 import com.imooc.lib_network.interceptor.HttpInterceptor
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.*
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -17,7 +19,9 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object HttpManager {
 
-    const val PAGE_SIZE = 20
+    private const val PAGE_SIZE = 20
+
+    const val JSON = "Content-type:application/json;charset=UTF-8"
 
     private fun getClient():OkHttpClient{
         return OkHttpClient.Builder().addInterceptor(HttpInterceptor()).build()
@@ -110,5 +114,45 @@ object HttpManager {
     //查询天气
     fun queryWeather(city: String): Call<ResponseBody> {
         return apiWeather.getWeather(city, HttpKey.WEATHER_KEY)
+    }
+
+    //=========================机器人================================
+    //机器人对象
+    private val retrofitAiRobot by lazy {
+        Retrofit.Builder()
+            .client(getClient())
+            .baseUrl(HttpUrl.ROBOT_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    //机器接口对象
+    private val apiAiRobot by lazy{
+        retrofitAiRobot.create(HttpImplService::class.java)
+    }
+
+    fun aiRobotChat(text: String, callback: Callback<RobotData>){
+        val jsonObject = JSONObject()
+        jsonObject.put("reqType", 0)
+
+        val perception = JSONObject()
+
+        val inputText = JSONObject()
+        inputText.put("text", text)
+
+        perception.put("inputText", inputText)
+
+        val userInfo = JSONObject()
+        userInfo.put("apiKey", HttpKey.ROBOT_KEY)
+        userInfo.put("userId", "ai")
+
+        jsonObject.put("perception", perception)
+        jsonObject.put("userInfo", userInfo)
+
+        Log.i("============= ", jsonObject.toString())
+
+        val body = RequestBody.create(MediaType.parse(JSON), jsonObject.toString())
+
+        apiAiRobot.aiRobot(body).enqueue(callback)
     }
 }

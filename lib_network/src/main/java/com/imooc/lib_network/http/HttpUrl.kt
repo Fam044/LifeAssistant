@@ -18,4 +18,9 @@ object HttpUrl {
     const val CONS_TELL_BASE_URL = "http://web.juhe.cn/"
     //星座详情
     const val CONS_TELL_ACTION = "constellation/getAll"
+
+    //机器人
+    const val ROBOT_BASE_URL = "http://openapi.turingapi.com/"
+    //机器人对话
+    const val ROBOT_ACTION = "openapi/api/v2"
 }

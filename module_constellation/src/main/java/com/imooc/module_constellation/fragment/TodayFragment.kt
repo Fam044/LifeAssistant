@@ -26,12 +26,12 @@ class TodayFragment(private val isToday: Boolean, val name: String): BaseFragmen
 
     //加载今天的数据
     private fun loadToday() {
-        //HttpManager.queryTodayConsTellInfo(name, this)
+        HttpManager.queryTodayConsTellInfo(name, this)
     }
 
     //加载明天的数据
     private fun loadTomorrow() {
-        //HttpManager.queryTomorrowConsTellInfo(name, this)
+        HttpManager.queryTomorrowConsTellInfo(name, this)
     }
 
     override fun onResponse(call: Call<TodayData>, response: Response<TodayData>) {

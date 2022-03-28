@@ -24,8 +24,9 @@ object VoiceEngineAnalyze {
         val results = nlu.optJSONArray("results") ?: return
         val nluResultLength = results.length()
         when {
+            //说明没有识别结果，机器人进行回答
             nluResultLength <= 0 -> {
-                return
+                mOnNluResultListener.aiRobot(rawText)
             }
             //单条命中
             results.length() >= 1 -> analyzeNluSingle(results[0] as JSONObject)
