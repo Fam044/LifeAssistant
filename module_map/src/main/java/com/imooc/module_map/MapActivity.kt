@@ -29,7 +29,6 @@ class MapActivity : BaseActivity() {
 
     override fun initView() {
         MapManager.bindMapView(mMapView)
-
     }
 
 
