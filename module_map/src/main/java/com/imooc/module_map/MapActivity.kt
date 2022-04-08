@@ -7,6 +7,7 @@ import com.alibaba.android.arouter.facade.annotation.Route
 import com.imooc.lib_base.base.BaseActivity
 import com.imooc.lib_base.helper.ARouterHelper
 import com.imooc.lib_base.map.MapManager
+import com.imooc.lib_base.utils.L
 import com.yanzhenjie.permission.Action
 import kotlinx.android.synthetic.main.activity_map.*
 
@@ -39,7 +40,17 @@ class MapActivity : BaseActivity() {
     }
 
     private fun startLocation(){
-        MapManager.setLocationSwitch(true)
+        MapManager.setLocationSwitch(true, object : MapManager.OnLocationResultListener{
+            override fun result(la: Double, lo: Double, address: String, desc: String) {
+                MapManager.setCenterMap(la, lo)
+                L.i("定位成功: $address, desc: $desc")
+            }
+
+            override fun fail() {
+                L.i("定位失败")
+            }
+
+        })
     }
 
     override fun isShowBack(): Boolean {

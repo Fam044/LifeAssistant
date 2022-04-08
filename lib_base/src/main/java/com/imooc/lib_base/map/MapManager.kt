@@ -42,6 +42,8 @@ object MapManager {
     //定位客户端
     private lateinit var mLocationClient: LocationClient
 
+    private var mOnLocationResultListener: OnLocationResultListener? = null
+
     //初始化
     fun initMap(mContext: Context){
         SDKInitializer.setAgreePrivacy(mContext, true)
@@ -135,25 +137,19 @@ object MapManager {
                     return
                 }
 
-                val addr = location.addrStr //获取详细地址信息
-//                val country = location.country //获取国家
-//                val province = location.province //获取省份
-//                val city = location.city //获取城市
-//                val district = location.district //获取区县
-//                val street = location.street //获取街道信息
-//                val adcode = location.adCode //获取adcode
-//                val town = location.town //获取乡镇信息
-
 //                Log.e(TAG, "location: $location")
 //                Log.e(TAG, "address: $addr")
 //                Log.e(TAG, "errorCode: ${location.locType}")
 
                 if (location.locType == 61 || location.locType == 161){
                     //设置默认中心点
-                    setCenterMap(location.latitude, location.longitude)
-                    //停止定位
-                    setLocationSwitch(false)
+                    //setCenterMap(location.latitude, location.longitude)
+                    mOnLocationResultListener?.result(location.latitude, location.longitude, location.addrStr, location.locationDescribe)
+                }else{
+                    mOnLocationResultListener?.fail()
                 }
+                //停止定位
+                setLocationSwitch(false, null)
 
             }
 
@@ -161,8 +157,9 @@ object MapManager {
 
     }
 
-    fun setLocationSwitch(isOpen: Boolean){
+    fun setLocationSwitch(isOpen: Boolean, mOnLocationResultListener: OnLocationResultListener?){
         if (isOpen){
+            this.mOnLocationResultListener = mOnLocationResultListener
             mLocationClient.start()
         } else {
             mLocationClient.stop()
@@ -186,5 +183,11 @@ object MapManager {
         mMapView = null
         mLocationClient.stop()
         mBaiduMap?.isMyLocationEnabled = false
+    }
+
+
+    interface OnLocationResultListener {
+        fun result(la: Double, lo: Double, address: String, desc: String)
+        fun fail()
     }
 }
