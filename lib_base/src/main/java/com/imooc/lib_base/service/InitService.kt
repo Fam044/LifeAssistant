@@ -6,6 +6,8 @@ import com.imooc.lib_base.helper.func.CommonSettingHelper
 import com.imooc.lib_base.helper.SoundPoolHelper
 import com.imooc.lib_base.helper.func.AppHelper
 import com.imooc.lib_base.helper.func.ConsTellHelper
+import com.imooc.lib_base.map.MapManager
+import com.imooc.lib_base.utils.AssetsUtils
 import com.imooc.lib_base.utils.L
 import com.imooc.lib_base.utils.SpUtils
 import com.imooc.lib_voice.words.WordsTools
@@ -29,6 +31,7 @@ class InitService : IntentService(InitService::class.simpleName){
         AppHelper.initHelper(this)
         CommonSettingHelper.initHelper(this)
         ConsTellHelper.initHelper(this)
+        AssetsUtils.initUtils(this)
     }
 
     override fun onDestroy() {

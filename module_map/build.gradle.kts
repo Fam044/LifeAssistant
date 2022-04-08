@@ -61,4 +61,5 @@ dependencies {
     implementation(project(":lib_base"))
     //运行时注解
     kapt(DependenciesConfig.AROUTER_COMPILER)
+
 }

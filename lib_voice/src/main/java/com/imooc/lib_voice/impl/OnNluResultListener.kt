@@ -56,8 +56,12 @@ interface OnNluResultListener {
     //机器人
     fun aiRobot(text: String)
 
+    //==================天气====================
     //查询天气
-    fun queryWeather()
+    fun queryWeather(city: String)
+
+    //查询天气详情
+    fun queryWeatherInfo(city: String)
 
     //识别语义失败
     fun nluError()

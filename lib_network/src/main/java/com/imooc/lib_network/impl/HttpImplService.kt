@@ -59,7 +59,7 @@ interface HttpImplService {
     @GET(HttpUrl.WEATHER_ACTION)
     fun getWeather(@Query("city")city: String,
                    @Query("key")key: String
-    ): Call<ResponseBody>
+    ): Call<WeatherData>
 
     //=======================机器人===========================
     @Headers(HttpManager.JSON)

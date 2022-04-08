@@ -112,8 +112,8 @@ object HttpManager {
     }
 
     //查询天气
-    fun queryWeather(city: String): Call<ResponseBody> {
-        return apiWeather.getWeather(city, HttpKey.WEATHER_KEY)
+    fun queryWeather(city: String, callback : Callback<WeatherData>) {
+        apiWeather.getWeather(city, HttpKey.WEATHER_KEY).enqueue(callback)
     }
 
     //=========================机器人================================

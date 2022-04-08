@@ -64,6 +64,11 @@ dependencies {
     api(DependenciesConfig.REFRESH_KERNEL)
     api(DependenciesConfig.REFRESH_HEADER)
     api(DependenciesConfig.REFRESH_FOOT)
+    //Chart
+    api(DependenciesConfig.CHART)
+    //百度地图
+    api(files("libs/BaiduLBS_Android.jar"))
+    api(files("libs/javapoet-1.9.0.jar"))
 
     api(project(":lib_voice"))
     api(project(":lib_network"))

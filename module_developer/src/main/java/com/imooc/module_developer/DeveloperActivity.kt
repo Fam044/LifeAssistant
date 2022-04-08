@@ -81,7 +81,7 @@ class DeveloperActivity : BaseActivity() {
                 }
             }
 
-            override fun getItemViewType(position: Int): Int {
+            override fun getItemType(position: Int): Int {
                 return mList[position].type
             }
         })

@@ -56,6 +56,8 @@ object DependenciesConfig{
     const val REFRESH_KERNEL = "com.scwang.smart:refresh-layout-kernel:2.0.1"
     const val REFRESH_HEADER = "com.scwang.smart:refresh-header-classics:2.0.1"
     const val REFRESH_FOOT = "com.scwang.smart:refresh-footer-classics:2.0.1"
+    //MPAndroidChart
+    const val CHART = "com.github.PhilJay:MPAndroidChart:v3.1.0"
 }
 
 // Module配置

@@ -26,6 +26,7 @@ import com.imooc.lib_base.utils.L
 import com.imooc.lib_network.HttpManager
 import com.imooc.lib_network.bean.JokeOneData
 import com.imooc.lib_network.bean.RobotData
+import com.imooc.lib_network.bean.WeatherData
 import com.imooc.lib_voice.engine.VoiceEngineAnalyze
 import com.imooc.lib_voice.impl.OnAsrResultListener
 import com.imooc.lib_voice.impl.OnNluResultListener
@@ -365,11 +366,39 @@ class VoiceService: Service(), OnNluResultListener {
         })
     }
 
+    override fun queryWeather(city: String) {
+        HttpManager.run {
+            queryWeather(city, object : Callback<WeatherData>{
+                override fun onResponse(call: Call<WeatherData>, response: Response<WeatherData>) {
+                    if (response.isSuccessful){
+                        response.body()?.let {
+                            //填充数据
+                            it.result.realtime.apply {
+                                addWeather(city, wid, info, temperature, object : VoiceTTS.OnTTSResultListener{
+                                    override fun ttsEnd() {
+                                        hideWindow()
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
 
-    //查询天气
-    override fun queryWeather() {
+                override fun onFailure(call: Call<WeatherData>, t: Throwable) {
+                    addAiText("无法为你查询到${city}的天气信息")
+                    hideWindow()
+                }
 
+            })
+        }
     }
+
+    override fun queryWeatherInfo(city: String) {
+        addAiText("正在为你查询${city}的天气详情")
+        ARouterHelper.startActivity(ARouterHelper.PATH_WEATHER, "city", city)
+        hideWindow()
+    }
+
 
     //语义识别失败
     override fun nluError() {
@@ -404,6 +433,24 @@ class VoiceService: Service(), OnNluResultListener {
         bean.text = text
         baseAddItem(bean)
         VoiceManager.ttsStart(text,mOnTTSResultListener)
+    }
+
+    /**
+     * 添加天气文本
+     */
+    private fun addWeather(city: String,
+                           wid: String,
+                           info: String,
+                           temperature: String,
+    mOnTTSResultListener: VoiceTTS.OnTTSResultListener){
+        val bean = ChatList(AppConstants.TYPE_AI_WEATHER)
+        bean.city = city
+        bean.wid = wid
+        bean.info = info
+        bean.temperature = "$temperature°"
+        baseAddItem(bean)
+        val text = "$city 今天天气$info ，温度$temperature 度"
+        VoiceManager.ttsStart(text, mOnTTSResultListener)
     }
 
     /**

@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AiVoiceApp">
+
         <activity
             android:name=".MapActivity"
             android:exported="true">

@@ -41,7 +41,7 @@ open class CommonAdapter<T>: RecyclerView.Adapter<CommonViewHolder>{
 
     override fun getItemViewType(position: Int): Int {
         if (onMoreBindDataListener != null){
-            return onMoreBindDataListener!!.getItemViewType(position)
+            return onMoreBindDataListener!!.getItemType(position)
         }
         return 0
     }
@@ -52,6 +52,6 @@ open class CommonAdapter<T>: RecyclerView.Adapter<CommonViewHolder>{
     }
 
     interface OnMoreBindDataListener<T>: OnBindDataListener<T>{
-        fun getItemViewType(position: Int): Int
+        fun getItemType(position: Int): Int
     }
 }

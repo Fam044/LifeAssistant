@@ -178,6 +178,20 @@ object VoiceEngineAnalyze {
                         }
                     }
                 }
+                NluWords.NLU_WEATHER -> {
+                        val userLoc = slots.optJSONArray("user_loc")
+                        userLoc?.let{ loc ->
+                            if (loc.length() > 0){
+                                val locObject = loc[0] as JSONObject
+                                val word = locObject.optString("word")
+                                if(intent == NluWords.INTENT_USER_WEATHER){
+                                    mOnNluResultListener.queryWeather(word)
+                                }else{
+                                    mOnNluResultListener.queryWeatherInfo(word)
+                                }
+                        }
+                    }
+                }
                 else -> mOnNluResultListener.nluError()
             }
         }
