@@ -29,9 +29,18 @@ class MapActivity : BaseActivity() {
 
     override fun initView() {
         MapManager.bindMapView(mMapView)
+
+        //动态权限
+        if (checkPermission(permission)){
+            startLocation()
+        }else{
+            requestPermission(permission, Action<List<String>> { startLocation() })
+        }
     }
 
-
+    private fun startLocation(){
+        MapManager.setLocationSwitch(true)
+    }
 
     override fun isShowBack(): Boolean {
         return true
