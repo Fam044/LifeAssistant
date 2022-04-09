@@ -4,6 +4,8 @@ import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.baidu.mapapi.search.core.PoiInfo
+import com.baidu.mapapi.search.poi.PoiResult
 import com.imooc.lib_base.base.BaseActivity
 import com.imooc.lib_base.helper.ARouterHelper
 import com.imooc.lib_base.map.MapManager
@@ -41,16 +43,17 @@ class MapActivity : BaseActivity() {
 
     private fun startLocation(){
         MapManager.setLocationSwitch(true, object : MapManager.OnLocationResultListener{
-            override fun result(la: Double, lo: Double, address: String, desc: String) {
+            override fun result(la: Double, lo: Double, city: String, address: String, desc: String) {
                 MapManager.setCenterMap(la, lo)
+                MapManager.searchNearby("美食", la, lo)
                 L.i("定位成功: $address, desc: $desc")
             }
 
             override fun fail() {
                 L.i("定位失败")
             }
-
         })
+
     }
 
     override fun isShowBack(): Boolean {

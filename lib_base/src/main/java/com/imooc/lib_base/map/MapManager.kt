@@ -9,6 +9,7 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory
 import com.baidu.mapapi.map.MapView
 import android.R
 import android.location.Location
+import android.text.TextUtils
 import android.util.Log
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
@@ -23,8 +24,13 @@ import com.baidu.location.LocationClient
 import com.baidu.mapapi.search.core.RouteNode.location
 
 import com.baidu.mapapi.map.MyLocationData
+import com.baidu.mapapi.search.core.PoiInfo
 import com.baidu.mapapi.search.core.RouteNode.location
 import com.baidu.mapapi.search.core.RouteNode.location
+import com.baidu.mapapi.search.core.SearchResult
+import com.baidu.mapapi.search.poi.*
+import com.baidu.mapapi.search.poi.PoiCitySearchOption
+
 
 
 
@@ -38,11 +44,16 @@ object MapManager {
 
     private var mMapView : MapView? = null
     private var mBaiduMap: BaiduMap? = null
+    private var mPoiSearch: PoiSearch? = null
+
+    //用户所在城市
+    private var locationCity: String = ""
 
     //定位客户端
     private lateinit var mLocationClient: LocationClient
 
     private var mOnLocationResultListener: OnLocationResultListener? = null
+    private var mOnPoiResultListener: OnPoiResultListener? = null
 
     //初始化
     fun initMap(mContext: Context){
@@ -50,6 +61,10 @@ object MapManager {
         SDKInitializer.initialize(mContext)
         LocationClient.setAgreePrivacy(true)
         mLocationClient = LocationClient(mContext)
+        //初始化POI
+        initPoi()
+        //初始化定位
+        initLocation()
     }
 
     //绑定地图
@@ -69,8 +84,18 @@ object MapManager {
         //=================定位==============
         //开启定位
         setMyLocationEnabled(true)
-        //初始化定位
-        initLocation()
+
+    }
+
+    fun setPoiImage(poiResult: PoiResult){
+        mBaiduMap?.clear()
+        //创建PoiOverlay对象
+        val poiOverlay = PoiOverlay(mBaiduMap)
+        //设置Poi检索数据
+        poiOverlay.setData(poiResult)
+        //将poiOverlay添加至地图并缩放至合适级别
+        poiOverlay.addToMap()
+        poiOverlay.zoomToSpan()
     }
 
     //========================操作方法=====================
@@ -144,7 +169,14 @@ object MapManager {
                 if (location.locType == 61 || location.locType == 161){
                     //设置默认中心点
                     //setCenterMap(location.latitude, location.longitude)
-                    mOnLocationResultListener?.result(location.latitude, location.longitude, location.addrStr, location.locationDescribe)
+                    locationCity = location.city
+                    mOnLocationResultListener?.result(
+                        location.latitude,
+                        location.longitude,
+                        location.city,
+                        location.addrStr,
+                        location.locationDescribe
+                    )
                 }else{
                     mOnLocationResultListener?.fail()
                 }
@@ -166,6 +198,80 @@ object MapManager {
         }
     }
 
+    //=========================POI=======================
+    private fun initPoi(){
+        mPoiSearch = PoiSearch.newInstance()
+        mPoiSearch?.setOnGetPoiSearchResultListener(object : OnGetPoiSearchResultListener{
+            override fun onGetPoiResult(result: PoiResult?) {
+                result?.let {
+                    if (it.error == SearchResult.ERRORNO.NO_ERROR){
+                        mOnPoiResultListener?.result(it)
+                        setPoiImage(result)
+                    }
+                }
+            }
+
+            //废弃
+            override fun onGetPoiDetailResult(result: PoiDetailResult?) {            }
+
+            override fun onGetPoiDetailResult(result: PoiDetailSearchResult?) {
+                Log.i(TAG, "=====> onGetPoiDetailResult")
+            }
+
+            override fun onGetPoiIndoorResult(result: PoiIndoorResult?) {
+                Log.i(TAG, "=====> onGetPoiIndoorResult")
+            }
+
+        })
+    }
+
+    private fun poi(keyword: String, city: String){
+        Log.e(TAG, "keyword: $keyword, city: $city")
+        mPoiSearch?.searchInCity(
+            PoiCitySearchOption()
+                .city(city) //必填
+                .keyword(keyword) //必填
+                .pageNum(10)
+            )
+    }
+
+    fun poiSearch(keyword: String, city: String, mOnPoiResultListener: OnPoiResultListener?) {
+        this.mOnPoiResultListener = mOnPoiResultListener
+        if (!TextUtils.isEmpty(city)) {
+            poi(keyword, city)
+        }else{
+            if (!TextUtils.isEmpty(locationCity)){
+                poi(keyword, locationCity)
+            } else {
+                setLocationSwitch(true, object : OnLocationResultListener{
+                    override fun result(
+                        la: Double,
+                        lo: Double,
+                        city: String,
+                        address: String,
+                        desc: String
+                    ) {
+                        poi(keyword, city)
+                    }
+
+                    override fun fail() {
+
+                    }
+                })
+            }
+        }
+    }
+
+    fun searchNearby(keyword: String, la: Double, lo: Double){
+        //支持多个关键字并集检索，不同关键字间以$符号分隔，最多支持10个关键字检索。如:”银行$酒店”
+        mPoiSearch?.searchNearby(
+            PoiNearbySearchOption()
+            .location(LatLng(la, lo))
+            .radius(1000)
+            .keyword(keyword)
+            .pageNum(10)
+        )
+    }
 
 
     //=========================生命周期=====================
@@ -183,11 +289,16 @@ object MapManager {
         mMapView = null
         mLocationClient.stop()
         mBaiduMap?.isMyLocationEnabled = false
+        mPoiSearch?.destroy()
     }
 
 
     interface OnLocationResultListener {
-        fun result(la: Double, lo: Double, address: String, desc: String)
+        fun result(la: Double, lo: Double, city: String, address: String, desc: String)
         fun fail()
+    }
+
+    interface OnPoiResultListener{
+        fun result(result: PoiResult)
     }
 }
