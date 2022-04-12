@@ -5,7 +5,7 @@
     <application>
         <activity
             android:name=".MapActivity" />
-
+<activity android:name=".ui.WNaviGuideActivity"/>
     </application>
 
 </manifest>

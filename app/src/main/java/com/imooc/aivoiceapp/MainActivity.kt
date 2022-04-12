@@ -32,7 +32,9 @@ class MainActivity : BaseActivity() {
         Manifest.permission.CALL_PHONE,
         Manifest.permission.READ_CONTACTS,
         Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.VIBRATE,
+        Manifest.permission.CAMERA
         )
 
     private val mList = ArrayList<MainListData>()

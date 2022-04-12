@@ -3,6 +3,7 @@ package com.imooc.module_map
 import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.baidu.mapapi.search.core.PoiInfo
 import com.baidu.mapapi.search.poi.PoiResult
@@ -42,18 +43,50 @@ class MapActivity : BaseActivity() {
     }
 
     private fun startLocation(){
+//        MapManager.setLocationSwitch(true, object : MapManager.OnLocationResultListener{
+//            override fun result(la: Double, lo: Double, city: String, address: String, desc: String) {
+//                MapManager.setCenterMap(la, lo)
+//                MapManager.searchNearby("美食", la, lo)
+//                //传递路线规划
+//                Log.i(
+//                    "MapManager",
+//                    "la: $la, lo: $lo, city: $city, address: $address, desc: $desc"
+//                )
+//                MapManager.startWalkingSearch(city, desc, city, "龙洞派出所")
+//                L.i("定位成功: $address, desc: $desc")
+//            }
+//
+//            override fun fail() {
+//                L.i("定位失败")
+//            }
+//        })
+
+        //步行规划
+//        MapManager.startLocationWalkingSearch("植物园地铁站")
+
+        //导航
         MapManager.setLocationSwitch(true, object : MapManager.OnLocationResultListener{
-            override fun result(la: Double, lo: Double, city: String, address: String, desc: String) {
-                MapManager.setCenterMap(la, lo)
-                MapManager.searchNearby("美食", la, lo)
-                L.i("定位成功: $address, desc: $desc")
+            override fun result(
+                la: Double,
+                lo: Double,
+                city: String,
+                address: String,
+                desc: String
+            ) {
+                MapManager.startCode(city, "植物园地铁站", object : MapManager.OnCodeResultListener{
+                    override fun result(codeLa: Double, codeLo: Double) {
+                        Log.i("MapManager", "MapActivity导航成功, city: $city, address: $address, desc: $desc")
+                        MapManager.initNaviEngine(this@MapActivity, la, lo, codeLa, codeLo)
+                    }
+
+                })
             }
 
             override fun fail() {
-                L.i("定位失败")
+                Log.i("MapManager", "MapActivity -> MapManager.setLocationSwitch -> fail()")
             }
-        })
 
+        })
     }
 
     override fun isShowBack(): Boolean {

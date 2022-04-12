@@ -12,15 +12,15 @@ object KotlinConstants{
 
 object AppConfig{
     // 依赖版本
-    const val compileSdkVersion = 29
+    const val compileSdkVersion = 28
     // 编译工具版本
-    const val buildToolsVersion = "29.0.2"
+    const val buildToolsVersion = "28.0.3"
     // 包名
     const val applicationId = "com.imooc.aivoiceapp"
     // 最小支持SDK
     const val minSdkVersion = 21
     // 当前基于SDK
-    const val targetSdkVersion = 29
+    const val targetSdkVersion = 28
     // 版本编码
     const val versionCode = 1
     // 版本名称

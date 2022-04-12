@@ -1,35 +1,40 @@
 package com.imooc.lib_base.map
 
+import android.app.Activity
 import android.content.Context
-import android.content.QuickViewConstants
-import com.baidu.mapapi.SDKInitializer
-import com.baidu.mapapi.map.BaiduMap
-import com.baidu.mapapi.map.MapStatus
-import com.baidu.mapapi.map.MapStatusUpdateFactory
-import com.baidu.mapapi.map.MapView
-import android.R
-import android.location.Location
+import android.content.Intent
 import android.text.TextUtils
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
-
-import com.baidu.mapapi.map.SupportMapFragment
-
-import com.baidu.mapapi.map.MapStatusUpdate
-import com.baidu.mapapi.model.LatLng
-import com.baidu.location.LocationClientOption
-
 import com.baidu.location.LocationClient
-import com.baidu.mapapi.search.core.RouteNode.location
-
-import com.baidu.mapapi.map.MyLocationData
-import com.baidu.mapapi.search.core.PoiInfo
-import com.baidu.mapapi.search.core.RouteNode.location
-import com.baidu.mapapi.search.core.RouteNode.location
+import com.baidu.location.LocationClientOption
+import com.baidu.mapapi.SDKInitializer
+import com.baidu.mapapi.map.*
+import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.SearchResult
 import com.baidu.mapapi.search.poi.*
-import com.baidu.mapapi.search.poi.PoiCitySearchOption
+import com.baidu.mapapi.search.route.*
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener
+
+import com.baidu.mapapi.walknavi.WalkNavigateHelper
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam
+import com.baidu.mapapi.walknavi.model.WalkRoutePlanError
+
+import androidx.core.content.ContextCompat.startActivity
+import com.baidu.mapapi.search.geocode.GeoCodeResult
+import com.baidu.mapapi.search.geocode.GeoCoder
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult
+
+import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener
+import com.imooc.lib_base.helper.ARouterHelper
+import com.baidu.mapapi.search.geocode.GeoCodeOption
+import com.baidu.mapapi.search.route.PlanNode
+import com.baidu.mapapi.search.route.WalkingRoutePlanOption
+
+
 
 
 
@@ -40,7 +45,7 @@ object MapManager {
     const val TAG = "MapManager"
 
     //最大缩放等级  4-21
-    private const val MAX_ZOOM:Float = 18f
+    private const val MAX_ZOOM:Float = 17f
 
     private var mMapView : MapView? = null
     private var mBaiduMap: BaiduMap? = null
@@ -52,19 +57,26 @@ object MapManager {
     //定位客户端
     private lateinit var mLocationClient: LocationClient
 
+    private lateinit var mSearch: RoutePlanSearch
+    private lateinit var mCoder: GeoCoder
+
     private var mOnLocationResultListener: OnLocationResultListener? = null
     private var mOnPoiResultListener: OnPoiResultListener? = null
+    private var mOnCodeResultListener: OnCodeResultListener? = null
 
     //初始化
     fun initMap(mContext: Context){
         SDKInitializer.setAgreePrivacy(mContext, true)
         SDKInitializer.initialize(mContext)
+
         LocationClient.setAgreePrivacy(true)
         mLocationClient = LocationClient(mContext)
         //初始化POI
         initPoi()
         //初始化定位
         initLocation()
+        //初始化编码
+        initCode()
     }
 
     //绑定地图
@@ -84,19 +96,10 @@ object MapManager {
         //=================定位==============
         //开启定位
         setMyLocationEnabled(true)
-
+        //初始化步行监听
+        initWalkingRoute()
     }
 
-    fun setPoiImage(poiResult: PoiResult){
-        mBaiduMap?.clear()
-        //创建PoiOverlay对象
-        val poiOverlay = PoiOverlay(mBaiduMap)
-        //设置Poi检索数据
-        poiOverlay.setData(poiResult)
-        //将poiOverlay添加至地图并缩放至合适级别
-        poiOverlay.addToMap()
-        poiOverlay.zoomToSpan()
-    }
 
     //========================操作方法=====================
     //缩放地图
@@ -182,11 +185,8 @@ object MapManager {
                 }
                 //停止定位
                 setLocationSwitch(false, null)
-
             }
-
         })
-
     }
 
     fun setLocationSwitch(isOpen: Boolean, mOnLocationResultListener: OnLocationResultListener?){
@@ -223,6 +223,17 @@ object MapManager {
             }
 
         })
+    }
+
+    fun setPoiImage(poiResult: PoiResult){
+        mBaiduMap?.clear()
+        //创建PoiOverlay对象
+        val poiOverlay = PoiOverlay(mBaiduMap)
+        //设置Poi检索数据
+        poiOverlay.setData(poiResult)
+        //将poiOverlay添加至地图并缩放至合适级别
+        poiOverlay.addToMap()
+        poiOverlay.zoomToSpan()
     }
 
     private fun poi(keyword: String, city: String){
@@ -274,6 +285,181 @@ object MapManager {
     }
 
 
+    //==========================路线规划========================
+    //初始化步行规划
+    private fun initWalkingRoute(){
+        mSearch = RoutePlanSearch.newInstance()
+        mSearch.setOnGetRoutePlanResultListener(object : OnGetRoutePlanResultListener{
+
+            override fun onGetWalkingRouteResult(walkingRouteResult: WalkingRouteResult?) {
+                //创建WalkingRouteOverlay实例
+                val overlay = WalkingRouteOverlay(mBaiduMap)
+                walkingRouteResult?.let {
+                    if (it.routeLines != null){
+                        if (it.routeLines.size > 0){
+                            //获取路径规划数据,(以返回的第一条数据为例)
+                            //为WalkingRouteOverlay实例设置路径数据
+                            overlay.setData(walkingRouteResult.routeLines[0])
+                            //在地图上绘制WalkingRouteOverlay
+                            overlay.addToMap()
+                            overlay.zoomToSpan()
+                            Log.i(TAG, "suggestAddrInfo: ${walkingRouteResult.suggestAddrInfo}, " +
+                                    "taxiInfo: ${walkingRouteResult.taxiInfo}, " +
+                                    "error: ${walkingRouteResult.error}")
+                        }else{
+                            Log.i(TAG, "线路为0")
+                        }
+                    }else{
+                        Log.i(TAG, "线路为空")
+                        Log.i(TAG, "suggestAddrInfo: ${walkingRouteResult.suggestAddrInfo}, " +
+                                "taxiInfo: ${walkingRouteResult.taxiInfo}, " +
+                                "error: ${walkingRouteResult.error}")
+                    }
+                }
+            }
+
+            override fun onGetTransitRouteResult(p0: TransitRouteResult?) {}
+            override fun onGetMassTransitRouteResult(p0: MassTransitRouteResult?) {}
+            override fun onGetDrivingRouteResult(p0: DrivingRouteResult?) {}
+            override fun onGetIndoorRouteResult(p0: IndoorRouteResult?) {}
+            override fun onGetBikingRouteResult(p0: BikingRouteResult?) {}
+
+        })
+    }
+
+    //以自身的位置开始去进行（步行）路线规划
+    fun startLocationWalkingSearch(toAddress: String){
+
+        setLocationSwitch(true, object : OnLocationResultListener{
+            override fun result(
+                la: Double,
+                lo: Double,
+                city: String,
+                address: String,
+                desc: String
+            ) {
+                Log.i(TAG, "定位成功, address: $address, desc: $desc")
+                setCenterMap(la, lo)
+
+                startWalkingSearch(city, desc, city, toAddress)
+            }
+
+            override fun fail() {
+                Log.e(TAG, "定位失败")
+            }
+        })
+    }
+
+    //已有数据的情况下开始步行规划
+    fun startWalkingSearch(fromCity: String, fromAddress: String, toCity: String, toAddress: String){
+        Log.i(
+            "MapManager",
+            "fromCity: $fromCity, fromAddress: $fromAddress, toCity: $toCity, toAddress: $toAddress"
+        )
+        val stNode = PlanNode.withCityNameAndPlaceName(fromCity, fromAddress)
+        val enNode = PlanNode.withCityNameAndPlaceName(toCity, toAddress)
+
+        //发起路线规划
+        mSearch.walkingSearch(
+            WalkingRoutePlanOption()
+                .from(stNode)
+                .to(enNode)
+        )
+    }
+
+    //==========================导航=======================
+    fun initNaviEngine(mActivity: Activity, startLa: Double, startLo: Double, endLa: Double, endLo: Double){
+
+        // 获取导航控制类
+        // 引擎初始化
+        WalkNavigateHelper.getInstance().initNaviEngine(mActivity, object : IWEngineInitListener {
+            override fun engineInitSuccess() {
+                //引擎初始化成功的回调
+                routeWalkPlanWithParam(startLa,startLo, endLa, endLo)
+                Log.i(TAG, "导航引擎初始化成功, startLa: $startLa, startLo: $startLo, endLa: $endLa, endLo: $endLo")
+            }
+
+            override fun engineInitFail() {
+                //引擎初始化失败的回调
+                Log.i(TAG, "导航引擎初始化失败")
+            }
+        })
+    }
+
+    //配置导航参数
+    private fun routeWalkPlanWithParam(startLa: Double, startLo: Double, endLa: Double, endLo: Double) {
+        //起终点位置
+        val startPt = LatLng(startLa,startLo)
+        val endPt = LatLng(endLa, endLo)
+        //构造WalkNaviLaunchParam
+        val mParam = WalkNaviLaunchParam().stPt(startPt).endPt(endPt)
+
+        //发起算路
+        WalkNavigateHelper.getInstance().routePlanWithParams(mParam, object : IWRoutePlanListener {
+            override fun onRoutePlanStart() {
+                //开始算路的回调
+                Log.i(TAG, "开始算路的回调")
+            }
+
+            override fun onRoutePlanSuccess() {
+                Log.i(TAG, "开始算路的回调成功")
+                //算路成功
+                //跳转至诱导页面
+                ARouterHelper.startActivity(ARouterHelper.PATH_MAP_NAVI)
+            }
+
+            override fun onRoutePlanFail(walkRoutePlanError: WalkRoutePlanError) {
+                //算路失败的回调
+                Log.i(TAG, "开始算路的回调失败, $walkRoutePlanError," +
+                        " walkRoutePlanError.name: ${walkRoutePlanError.name}," +
+                        " walkRoutePlanError.declaringClass: ${walkRoutePlanError.declaringClass}")
+            }
+        })
+
+    }
+
+    //========================地理编码====================
+
+    //初始化地理编码
+    private fun initCode(){
+        mCoder = GeoCoder.newInstance()
+        mCoder.setOnGetGeoCodeResultListener(object : OnGetGeoCoderResultListener{
+            override fun onGetGeoCodeResult(geoCodeResult: GeoCodeResult?) {
+                Log.i(TAG, "正编码成功")
+                //正编码
+                if (null != geoCodeResult && null != geoCodeResult.location) {
+                    if (geoCodeResult.error !== SearchResult.ERRORNO.NO_ERROR) {
+                        //没有检索到结果
+                        return
+                    } else {
+                        val latitude = geoCodeResult.location.latitude
+                        val longitude = geoCodeResult.location.longitude
+                        Log.i(TAG, "正编码成功: $latitude, $longitude")
+                        mOnCodeResultListener?.result(latitude, longitude)
+                    }
+                }
+            }
+
+            override fun onGetReverseGeoCodeResult(p0: ReverseGeoCodeResult?) {
+                //逆编码
+            }
+
+        })
+    }
+
+    //开始正编码
+    fun startCode(city: String, address: String, mOnCodeResultListener: OnCodeResultListener){
+        this.mOnCodeResultListener = mOnCodeResultListener
+        mCoder.geocode(
+            GeoCodeOption()
+                .city(city)
+                .address(address)
+        )
+    }
+
+
+
+
     //=========================生命周期=====================
 
     fun onResume(){
@@ -290,9 +476,10 @@ object MapManager {
         mLocationClient.stop()
         mBaiduMap?.isMyLocationEnabled = false
         mPoiSearch?.destroy()
+        mSearch.destroy()
     }
 
-
+    //===========================接口=========================
     interface OnLocationResultListener {
         fun result(la: Double, lo: Double, city: String, address: String, desc: String)
         fun fail()
@@ -300,5 +487,9 @@ object MapManager {
 
     interface OnPoiResultListener{
         fun result(result: PoiResult)
+    }
+
+    interface OnCodeResultListener{
+        fun result(codeLa: Double, codeLo: Double)
     }
 }
