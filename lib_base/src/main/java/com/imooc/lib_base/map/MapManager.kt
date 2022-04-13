@@ -3,6 +3,7 @@ package com.imooc.lib_base.map
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -33,11 +34,16 @@ import com.imooc.lib_base.helper.ARouterHelper
 import com.baidu.mapapi.search.geocode.GeoCodeOption
 import com.baidu.mapapi.search.route.PlanNode
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption
+import androidx.core.content.ContextCompat.startActivity
+import com.baidu.mapapi.walknavi.params.RouteNodeType
+import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo
+import androidx.core.content.ContextCompat.startActivity
 
-
-
-
-
+import com.baidu.mapapi.walknavi.adapter.IWNaviCalcRouteListener
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat.startActivity
+import com.imooc.lib_base.utils.L
 
 
 object MapManager {
@@ -63,6 +69,16 @@ object MapManager {
     private var mOnLocationResultListener: OnLocationResultListener? = null
     private var mOnPoiResultListener: OnPoiResultListener? = null
     private var mOnCodeResultListener: OnCodeResultListener? = null
+    private var mOnNaviResultListener: OnNaviResultListener? = null
+
+    //开始位置
+    private var startLa: Double = 0.0
+    private var startLo: Double = 0.0
+    //结束位置
+    private var endAddress: String = ""
+    private var endCity: String = ""
+    private var endNaviLa: Double = 0.0
+    private var endNaviLo: Double = 0.0
 
     //初始化
     fun initMap(mContext: Context){
@@ -98,6 +114,11 @@ object MapManager {
         setMyLocationEnabled(true)
         //初始化步行监听
         initWalkingRoute()
+        //初始化监听
+        initListener()
+
+        //比例尺
+        showScaleControl(true)
     }
 
 
@@ -273,7 +294,8 @@ object MapManager {
         }
     }
 
-    fun searchNearby(keyword: String, la: Double, lo: Double){
+    fun searchNearby(keyword: String, la: Double, lo: Double, mOnPoiResultListener: OnPoiResultListener?){
+        this.mOnPoiResultListener = mOnPoiResultListener
         //支持多个关键字并集检索，不同关键字间以$符号分隔，最多支持10个关键字检索。如:”银行$酒店”
         mPoiSearch?.searchNearby(
             PoiNearbySearchOption()
@@ -306,6 +328,9 @@ object MapManager {
                             Log.i(TAG, "suggestAddrInfo: ${walkingRouteResult.suggestAddrInfo}, " +
                                     "taxiInfo: ${walkingRouteResult.taxiInfo}, " +
                                     "error: ${walkingRouteResult.error}")
+
+                            //3秒后自动开始导航
+                            mOnNaviResultListener?.onStartNavi(startLa, startLo, endCity, endAddress)
                         }else{
                             Log.i(TAG, "线路为0")
                         }
@@ -328,7 +353,8 @@ object MapManager {
     }
 
     //以自身的位置开始去进行（步行）路线规划
-    fun startLocationWalkingSearch(toAddress: String){
+    fun startLocationWalkingSearch(toAddress: String, mOnNaviResultListener: OnNaviResultListener){
+        this.mOnNaviResultListener = mOnNaviResultListener
 
         setLocationSwitch(true, object : OnLocationResultListener{
             override fun result(
@@ -339,6 +365,10 @@ object MapManager {
                 desc: String
             ) {
                 Log.i(TAG, "定位成功, address: $address, desc: $desc")
+                startLa = la
+                startLo = lo
+                endAddress = toAddress
+                endCity = city
                 setCenterMap(la, lo)
 
                 startWalkingSearch(city, desc, city, toAddress)
@@ -375,7 +405,9 @@ object MapManager {
         WalkNavigateHelper.getInstance().initNaviEngine(mActivity, object : IWEngineInitListener {
             override fun engineInitSuccess() {
                 //引擎初始化成功的回调
+                Log.i(TAG, "进入到initNaviEngine -> engineInitSuccess")
                 routeWalkPlanWithParam(startLa,startLo, endLa, endLo)
+//                routePlanWithRouteNode()
                 Log.i(TAG, "导航引擎初始化成功, startLa: $startLa, startLo: $startLo, endLa: $endLa, endLo: $endLo")
             }
 
@@ -386,14 +418,95 @@ object MapManager {
         })
     }
 
-    //配置导航参数
-    private fun routeWalkPlanWithParam(startLa: Double, startLo: Double, endLa: Double, endLo: Double) {
+    //室内步行导航
+    private fun routePlanWithRouteNode() {
+        Log.i(TAG, "调用routePlanWithRouteNode")
         //起终点位置
-        val startPt = LatLng(startLa,startLo)
-        val endPt = LatLng(endLa, endLo)
+        val startPt = LatLng(40.056015,116.3078)// 百度大厦
+        //WalkRouteNodeInfo walkStartNode = new WalkRouteNodeInfo();
+        val walkStartNode = WalkRouteNodeInfo()
+        walkStartNode.keyword = "百度大厦"
+        walkStartNode.location = startPt
+        walkStartNode.type = RouteNodeType.KEYWORD
+        walkStartNode.citycode = 131
+
+        val endPt = LatLng(40.035919,116.339863)
+//        WalkRouteNodeInfo walkEndNode = new WalkRouteNodeInfo();
+        val walkEndNode = WalkRouteNodeInfo()
+        walkEndNode.location = endPt
+        walkEndNode.type = RouteNodeType.KEYWORD
+        walkEndNode.keyword = "麻辣诱惑(五彩城店)"
+//        walkEndNode.buildingID = "1260176407175102463"
+//        walkEndNode.floorID = "F4"
+        walkEndNode.citycode = 131
+        val walkParam = WalkNaviLaunchParam().startNodeInfo(walkStartNode).endNodeInfo(walkEndNode)
+
+        Log.i(TAG, "startPt: $startPt, endPt: $endPt")
+        Log.i(TAG, "walkParam: $walkParam, walkParam.startNodeInfo: ${walkParam.startNodeInfo}," +
+                " walkParam.endNodeInfo: ${walkParam.endNodeInfo}, " +
+                "walkParam.extraNaviMode: ${walkParam.extraNaviMode}")
+
+        //发起路线规划
+        WalkNavigateHelper.getInstance()
+            .routePlanWithRouteNode(walkParam, object : IWRoutePlanListener {
+                override fun onRoutePlanStart() {
+                    //开始算路的回调
+                    Log.i(TAG, "开始算路的回调")
+                }
+
+                override fun onRoutePlanSuccess() {
+                    //算路成功
+                    Log.i(TAG, "开始算路的回调成功")
+                    WalkNavigateHelper.getInstance()
+                        .naviCalcRoute(0, object : IWNaviCalcRouteListener {
+                            override fun onNaviCalcRouteSuccess() {
+                                Log.d(TAG, "WalkNavi naviCalcRoute success")
+                                ARouterHelper.startActivity(ARouterHelper.PATH_MAP_NAVI)
+                            }
+
+                            override fun onNaviCalcRouteFail(error: WalkRoutePlanError) {
+                                Log.d(TAG, "WalkNavi naviCalcRoute fail")
+                            }
+                        })
+                }
+
+                override fun onRoutePlanFail(walkRoutePlanError: WalkRoutePlanError) {
+                    //算路失败的回调
+                    Log.i(TAG, "开始算路的回调失败, walkRoutePlanError: $walkRoutePlanError")
+                }
+            })
+
+    }
+
+//    private fun naviCalcRoute(routeIndex: Int) {
+//        WalkNavigateHelper.getInstance()
+//            .naviCalcRoute(routeIndex, object : IWNaviCalcRouteListener {
+//                override fun onNaviCalcRouteSuccess() {
+//                    Log.d(TAG, "WalkNavi naviCalcRoute success")
+//                    ARouterHelper.startActivity(ARouterHelper.PATH_MAP_NAVI)
+//                }
+//
+//                override fun onNaviCalcRouteFail(error: WalkRoutePlanError) {
+//                    Log.d(TAG, "WalkNavi naviCalcRoute fail")
+//                }
+//            })
+//    }
+
+    //配置导航参数
+    fun routeWalkPlanWithParam(startLa: Double, startLo: Double, endLa: Double, endLo: Double) {
+        Log.i(TAG, "调用routeWalkPlanWithParam")
+        //起终点位置
+        val startPt = LatLng(40.047416,116.312143)
+        val endPt = LatLng(40.048424, 116.313513)
         //构造WalkNaviLaunchParam
         val mParam = WalkNaviLaunchParam().stPt(startPt).endPt(endPt)
+        Log.i(TAG, "startPt: $startPt, endPt: $endPt")
+        Log.i(TAG, "mParam: $mParam, mParam.startNodeInfo: ${mParam.startNodeInfo}," +
+                " mParam.endNodeInfo: ${mParam.endNodeInfo}, " +
+                "mParam.extraNaviMode: ${mParam.extraNaviMode}")
 
+
+        Log.i(TAG, "即将调用WalkNavigateHelper.getInstance().routePlanWithParams")
         //发起算路
         WalkNavigateHelper.getInstance().routePlanWithParams(mParam, object : IWRoutePlanListener {
             override fun onRoutePlanStart() {
@@ -418,7 +531,59 @@ object MapManager {
 
     }
 
-    //========================地理编码====================
+    //========================事件交互======================
+
+    //设置Logo显示的位置
+    fun setLogoPosition(){
+        mMapView?.logoPosition = LogoPosition.logoPostionleftBottom
+    }
+
+    //指南针
+    fun isCompassEnabled(enabled: Boolean){
+        //实例化UiSettings类对象
+        val mUiSettings = mBaiduMap?.uiSettings
+        //通过设置enable为true或false 选择是否显示指南针
+        mUiSettings?.isCompassEnabled = enabled
+    }
+
+    //比例尺
+    fun showScaleControl(enabled: Boolean){
+        //通过设置enable为true或false 选择是否显示比例尺
+        mMapView?.showScaleControl(enabled)
+    }
+
+    //缩放按钮
+    fun showZoomControls(enable: Boolean){
+        //通过设置enable为true或false 选择是否显示缩放按钮
+        mMapView?.showZoomControls(enable)
+    }
+
+    //截图
+    fun snapshot(){
+        mBaiduMap?.snapshot { L.i("=====> 截图完成") }
+    }
+
+    private fun initListener(){
+        //单击
+        mBaiduMap?.setOnMapClickListener(object : BaiduMap.OnMapClickListener{
+            override fun onMapClick(p0: LatLng?) {
+                L.i("单击")
+            }
+
+            override fun onMapPoiClick(p0: MapPoi?) {
+                L.i("POI 单击")
+            }
+        })
+
+        //双击
+        mBaiduMap?.setOnMapDoubleClickListener(BaiduMap.OnMapDoubleClickListener { L.i("双击") })
+
+        //长按
+        mBaiduMap?.setOnMapLongClickListener { L.i("长按") }
+    }
+
+
+    //========================地理编码======================
 
     //初始化地理编码
     private fun initCode(){
@@ -491,5 +656,9 @@ object MapManager {
 
     interface OnCodeResultListener{
         fun result(codeLa: Double, codeLo: Double)
+    }
+
+    interface OnNaviResultListener{
+        fun onStartNavi(startLa: Double, startLo: Double, endCity: String, address: String)
     }
 }

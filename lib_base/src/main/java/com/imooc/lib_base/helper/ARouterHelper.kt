@@ -2,6 +2,7 @@ package com.imooc.lib_base.helper
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import com.alibaba.android.arouter.launcher.ARouter
 import com.imooc.lib_base.BuildConfig
@@ -42,8 +43,22 @@ object ARouterHelper {
         ARouter.getInstance().build(path).withString(key, value).navigation()
     }
 
+    fun startActivity(path: String, key: String, value: String, key1: String, value1: String){
+        ARouter.getInstance().build(path)
+            .withString(key, value)
+            .withString(key1, value1)
+            .navigation()
+    }
+
     fun startActivity(path: String, key: String, value: Int){
         ARouter.getInstance().build(path).withInt(key, value).navigation()
+    }
+
+    fun startActivity(path: String, key: String, value: Int, key1: String, mContext: Context){
+        ARouter.getInstance().build(path)
+            .withInt(key, value)
+            .withObject(key1, mContext)
+            .navigation()
     }
 
     fun startActivity(path: String, key: String, value: Boolean){

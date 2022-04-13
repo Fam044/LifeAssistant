@@ -22,6 +22,7 @@ import com.imooc.lib_base.helper.WindowHelper
 import com.imooc.lib_base.helper.func.AppHelper
 import com.imooc.lib_base.helper.func.ConsTellHelper
 import com.imooc.lib_base.helper.func.ContactHelper
+import com.imooc.lib_base.map.MapManager
 import com.imooc.lib_base.utils.L
 import com.imooc.lib_network.HttpManager
 import com.imooc.lib_network.bean.JokeOneData
@@ -396,6 +397,21 @@ class VoiceService: Service(), OnNluResultListener {
     override fun queryWeatherInfo(city: String) {
         addAiText("正在为你查询${city}的天气详情")
         ARouterHelper.startActivity(ARouterHelper.PATH_WEATHER, "city", city)
+        hideWindow()
+    }
+
+    //周边搜索
+    override fun nearByMap(poi: String) {
+        L.i("nearByMap: $poi")
+        addAiText("正在为您搜索周边$poi")
+        ARouterHelper.startActivity(ARouterHelper.PATH_MAP, "type", "poi", "keyword", poi)
+        hideWindow()
+    }
+
+    override fun routeMap(address: String) {
+        L.i("routeMap: $address")
+        addAiText("正在为您规划去$address 的路线")
+        ARouterHelper.startActivity(ARouterHelper.PATH_MAP, "type", "route", "keyword", address)
         hideWindow()
     }
 
