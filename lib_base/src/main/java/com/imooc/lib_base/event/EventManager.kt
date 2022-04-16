@@ -9,6 +9,11 @@ import java.util.*
  */
 object EventManager {
 
+    //唤醒
+    const val WAKE_UP = 0X11
+    //音量
+    const val VOLUME_ASR = 0X12
+
     //注册
     fun register(subscriber: Any){
         EventBus.getDefault().register(subscriber)

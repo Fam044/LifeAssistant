@@ -12,6 +12,7 @@ abstract class BaseFragment : Fragment() {
 
     //初始化
     abstract fun initView()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

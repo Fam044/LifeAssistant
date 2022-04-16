@@ -1,6 +1,7 @@
 package com.imooc.lib_base.view
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.ImageView
@@ -13,6 +14,7 @@ import com.imooc.lib_base.R
 class PointLayoutView : LinearLayout{
 
     private val mList = ArrayList<ImageView>()
+    private val bg = resources.getDrawable(R.drawable.lavender)
 
     constructor(context: Context?): super(context){initLayout()}
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs){initLayout()}
@@ -20,6 +22,7 @@ class PointLayoutView : LinearLayout{
 
     //初始化
     private fun initLayout(){
+        background = bg
         orientation = HORIZONTAL
         gravity = Gravity.CENTER
     }

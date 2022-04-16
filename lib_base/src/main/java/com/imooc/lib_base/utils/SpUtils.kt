@@ -33,7 +33,16 @@ object SpUtils {
         spEditor.commit()
     }
 
-    fun getInt(key: String, defaultValue: Int): Int?{
+    fun getInt(key: String, defaultValue: Int): Int{
         return sp.getInt(key, defaultValue)
+    }
+
+    fun putBoolean(key: String, value: Boolean){
+        spEditor.putBoolean(key, value)
+        spEditor.commit()
+    }
+
+    fun getBoolean(key: String, defValue: Boolean): Boolean{
+        return sp.getBoolean(key, defValue)
     }
 }

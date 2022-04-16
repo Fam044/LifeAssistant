@@ -25,6 +25,9 @@ interface OnAsrResultListener {
     //语义识别结果
     fun nluResult(nlu: JSONObject)
 
+    //音量
+    fun asrVolume(volume:Int)
+
     //错误
     fun voiceError(text: String)
 }

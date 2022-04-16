@@ -12,6 +12,7 @@
     <string name="app_title_city_select">城市选择</string>
     <string name="app_title_joke">笑话</string>
     <string name="app_title_constellation">星座</string>
+    <string name="app_title_constellation_select">星座选择</string>
 
     <!--欢迎词-->
     <string name="app_voice_ready">语音引擎准备完毕，你可以说“xxx”将我唤醒</string>
@@ -34,7 +35,7 @@
     <string name="app_server_uninstall_app_store">系统未安装应用商店</string>
 
     <!--天气-->
-    <string name="app_weather_t">°</string>
+    <string name="app_weather_t">°C</string>
     <string name="app_weather_humidity">湿度</string>
     <string name="app_weather_direct">风向</string>
     <string name="app_weather_power">风力</string>
@@ -43,6 +44,9 @@
     <string name="app_weather_hot">热门</string>
     <string name="app_weather_city">市</string>
     <string name="app_weather_district">县</string>
+
+    <string name="app_weather_time">上次更新时间 %s</string>
+    <string name="app_weather_aqi_info">%s  空气%s</string>
 
     <!--多媒体-->
     <string name="app_media_play">播放</string>
@@ -85,8 +89,8 @@
     <!--主页列表标题-->
     <array name="MainTitleArray">
         <item>天气</item>
-        <item>星座</item>
-        <item>笑话</item>
+<!--        <item>星座</item>-->
+<!--        <item>笑话</item>-->
         <item>地图</item>
         <item>应用管理</item>
         <item>语音设置</item>

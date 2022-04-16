@@ -76,6 +76,7 @@ object VoiceEngineAnalyze {
                         NluWords.INTENT_BACK_HOME -> mOnNluResultListener.home()
                         NluWords.INTENT_VOLUME_UP -> mOnNluResultListener.setVolumeUp()
                         NluWords.INTENT_VOLUME_DOWN -> mOnNluResultListener.setVolumeDown()
+                        NluWords.INTENT_QUIT -> mOnNluResultListener.quit()
                         else -> mOnNluResultListener.nluError()
                     }
                 }

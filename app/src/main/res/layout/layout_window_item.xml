@@ -13,6 +13,7 @@
     <LinearLayout
         android:gravity="bottom"
         android:orientation="vertical"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -23,7 +24,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -46,4 +47,11 @@
         </LinearLayout>
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/ivCloseWindow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        android:src="@drawable/img_close" />
 </RelativeLayout>

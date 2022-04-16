@@ -51,10 +51,11 @@ object AppHelper {
                 resolveInfo.loadLabel(pm) as String,
                 resolveInfo.loadIcon(pm),
                 resolveInfo.activityInfo.name,
-                resolveInfo.activityInfo.flags == ApplicationInfo.FLAG_SYSTEM
+                (resolveInfo.activityInfo.flags and ApplicationInfo.FLAG_SYSTEM) > 0
             )
             mAllAppList.add(appData)
         }
+
         L.e("mAllAppList$mAllAppList")
 
         initPageView()
@@ -138,7 +139,9 @@ object AppHelper {
             //如果你包含，说明呢安装了应用商店
             if (mAllMarketArray.contains(it.packName)) {
                 if (mAllAppList.size > 0) {
+                    //遍历所有应用
                     mAllAppList.forEach {data ->
+                        // 应用名称 == 打开的应用的名称
                         if (data.appName == appName) {
                             intentAppStore(data.packName, it.packName)
                             return true

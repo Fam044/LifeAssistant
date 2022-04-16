@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.alibaba.android.arouter.launcher.ARouter
 import com.imooc.lib_base.BuildConfig
 
+//路由帮助类
 object ARouterHelper {
 
     //Module First Run Path

@@ -39,7 +39,7 @@ class VoiceSettingActivity : BaseActivity() {
         initPeopleView()
 
         btn_test.setOnClickListener {
-            VoiceManager.ttsStart("大家好，我是山鸡哥")
+            VoiceManager.ttsStart("你好，我是语音助手")
         }
     }
 

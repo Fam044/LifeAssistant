@@ -33,7 +33,7 @@ object WindowHelper {
         lp.apply {
             this.width = WindowManager.LayoutParams.MATCH_PARENT
             this.height = WindowManager.LayoutParams.MATCH_PARENT
-            gravity = Gravity.CENTER
+            this.gravity = Gravity.CENTER
             format = PixelFormat.TRANSLUCENT
             flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or

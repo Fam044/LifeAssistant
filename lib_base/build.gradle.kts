@@ -66,9 +66,17 @@ dependencies {
     api(DependenciesConfig.REFRESH_FOOT)
     //Chart
     api(DependenciesConfig.CHART)
+    //屏幕适配
+    api(DependenciesConfig.AUTO_SIZE)
+    //状态栏
+    api(DependenciesConfig.ACTION_BAR)
+    //波浪
+    api(DependenciesConfig.VOICE_LINE)
+
     //百度地图
     api(files("libs/BaiduLBS_Android.jar"))
     api(files("libs/javapoet-1.9.0.jar"))
+    api(files("libs/IndoorscapeAlbumPlugin.jar"))
 
     api(project(":lib_voice"))
     api(project(":lib_network"))

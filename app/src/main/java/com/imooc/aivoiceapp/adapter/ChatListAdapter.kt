@@ -44,5 +44,4 @@ class ChatListAdapter(
     override fun getItemType(position: Int): Int {
         return mList[position].type
     }
-
 })

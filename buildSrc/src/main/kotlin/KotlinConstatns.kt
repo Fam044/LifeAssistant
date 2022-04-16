@@ -58,7 +58,14 @@ object DependenciesConfig{
     const val REFRESH_FOOT = "com.scwang.smart:refresh-footer-classics:2.0.1"
     //MPAndroidChart
     const val CHART = "com.github.PhilJay:MPAndroidChart:v3.1.0"
+    //AutoSize
+    const val AUTO_SIZE = "me.jessyan:autosize:1.2.1"
+    //ActionBar
+    const val ACTION_BAR = "com.gyf.immersionbar:immersionbar:3.0.0"
+    //波浪
+    const val VOICE_LINE = "com.carlos.voiceline:mylibrary:1.0.6"
 }
+
 
 // Module配置
 object ModuleConfig{

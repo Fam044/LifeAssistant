@@ -42,7 +42,6 @@ object ContactHelper {
                     it.getString(it.getColumnIndex(PHONE)).trim()
                 )
                 mContactList.add(data)
-
             }
         }
         L.i("mContactList:$mContactList")

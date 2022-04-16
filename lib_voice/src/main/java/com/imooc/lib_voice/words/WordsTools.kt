@@ -11,6 +11,8 @@ object WordsTools {
     private lateinit var noAnswerArray: Array<String>
     //暂不支持功能
     private lateinit var noSupportArray: Array<String>
+    //退出语音界面
+    private lateinit var quitArray: Array<String>
 
     fun initTools(mContext: Context){
         mContext.apply {
@@ -31,6 +33,11 @@ object WordsTools {
     //暂不支持
     fun noSupportWords(): String{
         return randomArray(noSupportArray)
+    }
+
+    //退出语音界面
+    fun quitWords(): String{
+        return randomArray(quitArray)
     }
 
     private fun randomArray(array: Array<String>): String {

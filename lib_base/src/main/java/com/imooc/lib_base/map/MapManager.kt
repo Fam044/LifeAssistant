@@ -3,6 +3,7 @@ package com.imooc.lib_base.map
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.text.TextUtils
 import android.util.Log
@@ -43,6 +44,7 @@ import com.baidu.mapapi.walknavi.adapter.IWNaviCalcRouteListener
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.ContextCompat.startActivity
+import com.imooc.lib_base.R
 import com.imooc.lib_base.utils.L
 
 
@@ -51,11 +53,13 @@ object MapManager {
     const val TAG = "MapManager"
 
     //最大缩放等级  4-21
-    private const val MAX_ZOOM:Float = 17f
+    const val MAX_ZOOM:Float = 17f
 
     private var mMapView : MapView? = null
     private var mBaiduMap: BaiduMap? = null
     private var mPoiSearch: PoiSearch? = null
+
+    private lateinit var mContext: Context
 
     //用户所在城市
     private var locationCity: String = ""
@@ -63,30 +67,42 @@ object MapManager {
     //定位客户端
     private lateinit var mLocationClient: LocationClient
 
+    //步行规划
     private lateinit var mSearch: RoutePlanSearch
+
+    //地理编码对象
     private lateinit var mCoder: GeoCoder
 
+    //定位对外的回调
     private var mOnLocationResultListener: OnLocationResultListener? = null
+
+    //POI对外的回调
     private var mOnPoiResultListener: OnPoiResultListener? = null
+
+    //编码对外的回调
     private var mOnCodeResultListener: OnCodeResultListener? = null
+
+    //导航对外的回调
     private var mOnNaviResultListener: OnNaviResultListener? = null
 
     //开始位置
     private var startLa: Double = 0.0
     private var startLo: Double = 0.0
+
     //结束位置
     private var endAddress: String = ""
     private var endCity: String = ""
-    private var endNaviLa: Double = 0.0
-    private var endNaviLo: Double = 0.0
 
     //初始化
     fun initMap(mContext: Context){
+        this.mContext = mContext
+
         SDKInitializer.setAgreePrivacy(mContext, true)
         SDKInitializer.initialize(mContext)
 
         LocationClient.setAgreePrivacy(true)
         mLocationClient = LocationClient(mContext)
+
         //初始化POI
         initPoi()
         //初始化定位
@@ -155,8 +171,8 @@ object MapManager {
     }
 
     //设置定位开关
-    fun setMyLocationEnabled(isOpen: Boolean){
-        mBaiduMap?.isMyLocationEnabled = isOpen
+    private fun setMyLocationEnabled(isOpen: Boolean){
+//        mBaiduMap?.isMyLocationEnabled = isOpen
     }
 
     //定位初始化
@@ -202,6 +218,7 @@ object MapManager {
                         location.locationDescribe
                     )
                 }else{
+                    L.i("定位失败原因：${location.locType}")
                     mOnLocationResultListener?.fail()
                 }
                 //停止定位
@@ -257,23 +274,23 @@ object MapManager {
         poiOverlay.zoomToSpan()
     }
 
-    private fun poi(keyword: String, city: String){
+    private fun poi(keyword: String, city: String, size: Int){
         Log.e(TAG, "keyword: $keyword, city: $city")
         mPoiSearch?.searchInCity(
             PoiCitySearchOption()
                 .city(city) //必填
                 .keyword(keyword) //必填
-                .pageNum(10)
+                .pageCapacity(size)
             )
     }
 
-    fun poiSearch(keyword: String, city: String, mOnPoiResultListener: OnPoiResultListener?) {
+    fun poiSearch(keyword: String, city: String, size: Int, mOnPoiResultListener: OnPoiResultListener?) {
         this.mOnPoiResultListener = mOnPoiResultListener
         if (!TextUtils.isEmpty(city)) {
-            poi(keyword, city)
+            poi(keyword, city, size)
         }else{
             if (!TextUtils.isEmpty(locationCity)){
-                poi(keyword, locationCity)
+                poi(keyword, locationCity, size)
             } else {
                 setLocationSwitch(true, object : OnLocationResultListener{
                     override fun result(
@@ -283,7 +300,7 @@ object MapManager {
                         address: String,
                         desc: String
                     ) {
-                        poi(keyword, city)
+                        poi(keyword, city, size)
                     }
 
                     override fun fail() {
@@ -294,7 +311,7 @@ object MapManager {
         }
     }
 
-    fun searchNearby(keyword: String, la: Double, lo: Double, mOnPoiResultListener: OnPoiResultListener?){
+    fun searchNearby(keyword: String, la: Double, lo: Double, size: Int, mOnPoiResultListener: OnPoiResultListener?){
         this.mOnPoiResultListener = mOnPoiResultListener
         //支持多个关键字并集检索，不同关键字间以$符号分隔，最多支持10个关键字检索。如:”银行$酒店”
         mPoiSearch?.searchNearby(
@@ -302,7 +319,7 @@ object MapManager {
             .location(LatLng(la, lo))
             .radius(1000)
             .keyword(keyword)
-            .pageNum(10)
+            .pageCapacity(size)
         )
     }
 
@@ -330,7 +347,7 @@ object MapManager {
                                     "error: ${walkingRouteResult.error}")
 
                             //3秒后自动开始导航
-                            mOnNaviResultListener?.onStartNavi(startLa, startLo, endCity, endAddress)
+//                            mOnNaviResultListener?.onStartNavi(startLa, startLo, endCity, endAddress)
                         }else{
                             Log.i(TAG, "线路为0")
                         }
@@ -369,8 +386,8 @@ object MapManager {
                 startLo = lo
                 endAddress = toAddress
                 endCity = city
-                setCenterMap(la, lo)
 
+                setCenterMap(la, lo)
                 startWalkingSearch(city, desc, city, toAddress)
             }
 
@@ -399,7 +416,6 @@ object MapManager {
 
     //==========================导航=======================
     fun initNaviEngine(mActivity: Activity, startLa: Double, startLo: Double, endLa: Double, endLo: Double){
-
         // 获取导航控制类
         // 引擎初始化
         WalkNavigateHelper.getInstance().initNaviEngine(mActivity, object : IWEngineInitListener {
@@ -496,8 +512,8 @@ object MapManager {
     fun routeWalkPlanWithParam(startLa: Double, startLo: Double, endLa: Double, endLo: Double) {
         Log.i(TAG, "调用routeWalkPlanWithParam")
         //起终点位置
-        val startPt = LatLng(40.047416,116.312143)
-        val endPt = LatLng(40.048424, 116.313513)
+        val startPt = LatLng(startLa,startLo)
+        val endPt = LatLng(endLa, endLo)
         //构造WalkNaviLaunchParam
         val mParam = WalkNaviLaunchParam().stPt(startPt).endPt(endPt)
         Log.i(TAG, "startPt: $startPt, endPt: $endPt")
@@ -535,7 +551,7 @@ object MapManager {
 
     //设置Logo显示的位置
     fun setLogoPosition(){
-        mMapView?.logoPosition = LogoPosition.logoPostionleftBottom
+        mMapView?.logoPosition = LogoPosition.logoPostionCenterTop
     }
 
     //指南针
@@ -561,6 +577,21 @@ object MapManager {
     //截图
     fun snapshot(){
         mBaiduMap?.snapshot { L.i("=====> 截图完成") }
+    }
+
+    //添加覆盖物
+    fun addMarker(lat: LatLng) {
+        //创建marker
+        val ooA = MarkerOptions().position(lat).icon(
+            BitmapDescriptorFactory.fromBitmap(
+                BitmapFactory.decodeResource(mContext.resources, R.drawable.img_my_location)
+            )
+        )
+
+        mBaiduMap?.let {
+            it.clear()
+            val mMarkerA = it.addOverlay(ooA)
+        }
     }
 
     private fun initListener(){
@@ -594,6 +625,10 @@ object MapManager {
                 //正编码
                 if (null != geoCodeResult && null != geoCodeResult.location) {
                     if (geoCodeResult.error !== SearchResult.ERRORNO.NO_ERROR) {
+                        /**
+                         * == 相当于java中的 equals 方法
+                         * === 相当于java中的 ==
+                         */
                         //没有检索到结果
                         return
                     } else {

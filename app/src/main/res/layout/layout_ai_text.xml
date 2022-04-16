@@ -4,10 +4,12 @@
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/tv_ai_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_ai_text"
-        android:layout_margin="10dp"
-        android:textColor="@android:color/white"/>
+        android:layout_margin="23dp"
+        android:padding="9dp"
+        android:textColor="@android:color/white"
+        android:textSize="15dp" />
 
 </RelativeLayout>

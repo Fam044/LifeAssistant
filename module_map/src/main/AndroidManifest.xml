@@ -3,9 +3,8 @@
     package="com.imooc.module_map">
 
     <application>
-        <activity
-            android:name=".MapActivity" />
-<activity android:name=".ui.WNaviGuideActivity"/>
+        <activity android:name=".MapActivity" />
+        <activity android:name=".ui.WNaviGuideActivity"/>
     </application>
 
 </manifest>

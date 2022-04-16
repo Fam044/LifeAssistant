@@ -29,6 +29,9 @@ interface OnNluResultListener {
     //音量-
     fun setVolumeDown()
 
+    //退出语音界面
+    fun quit()
+
     //==============通用设置==============
 
     //拨打联系人

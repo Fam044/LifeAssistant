@@ -4,11 +4,19 @@ import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.View
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.baidu.mapapi.model.LatLng
 import com.baidu.mapapi.search.core.PoiInfo
 import com.baidu.mapapi.search.poi.PoiResult
 import com.imooc.lib_base.base.BaseActivity
+import com.imooc.lib_base.base.adapter.CommonAdapter
+import com.imooc.lib_base.base.adapter.CommonViewHolder
 import com.imooc.lib_base.helper.ARouterHelper
 import com.imooc.lib_base.map.MapManager
 import com.imooc.lib_base.utils.L
@@ -38,12 +46,85 @@ class MapActivity : BaseActivity() {
     override fun initView() {
         MapManager.bindMapView(mMapView)
 
+        initPoiList()
+
         //动态权限
         if (checkPermission(permission)){
             startLocation()
         }else{
             requestPermission(permission, Action<List<String>> { startLocation() })
         }
+
+        //监听输入事件
+        etSearchPoi.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    if (it.isNotEmpty()) {
+                        ryPoiView.visibility = View.VISIBLE
+
+                        if (mList.size > 0) {
+                            mList.clear()
+                            mPoiAdapter.notifyDataSetChanged()
+                        }
+
+                        poiSearch(it.toString())
+                    } else {
+                        ryPoiView.visibility = View.GONE
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+    }
+
+    private val mList = ArrayList<PoiInfo>()
+    private lateinit var mPoiAdapter: CommonAdapter<PoiInfo>
+
+    //初始化列表
+    private fun initPoiList() {
+        ryPoiView.layoutManager = LinearLayoutManager(this)
+        ryPoiView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        mPoiAdapter = CommonAdapter(mList, object : CommonAdapter.OnBindDataListener<PoiInfo> {
+            override fun getLayoutId(type: Int): Int {
+                return R.layout.layout_poi_item
+            }
+
+            override fun onBindViewHolder(
+                model: PoiInfo,
+                viewHolder: CommonViewHolder,
+                type: Int,
+                position: Int
+            ) {
+                viewHolder.setText(R.id.tvTitle, model.name)
+                viewHolder.setText(R.id.tvContent, model.address)
+
+                viewHolder.getView(R.id.ivStartNavi).setOnClickListener {
+                    MapManager.setCenterMap(model.location.latitude,model.location.longitude)
+                    MapManager.zoomMap(MapManager.MAX_ZOOM)
+                }
+            }
+
+        })
+        ryPoiView.adapter = mPoiAdapter
+    }
+
+    //搜索
+    private fun poiSearch(poi: String) {
+        MapManager.poiSearch(poi, "", 3, object : MapManager.OnPoiResultListener {
+            override fun result(result: PoiResult) {
+                if (mList.size > 0) {
+                    mList.clear()
+                }
+                mList.addAll(result.allPoi)
+                mPoiAdapter.notifyDataSetChanged()
+            }
+
+        })
     }
 
     private fun startLocation(){
@@ -114,10 +195,8 @@ class MapActivity : BaseActivity() {
                                 codeLa, codeLo
                             )
                     }
-                })}, 5 * 1000)
-
+                }) }, 5 * 1000)
             }
-
         })
     }
 
@@ -132,6 +211,7 @@ class MapActivity : BaseActivity() {
                     "la: $la, lo: $lo, city: $city, address: $address, desc: $desc"
                 )
                 L.i("定位成功: $address, desc: $desc")
+                MapManager.addMarker(LatLng(la, lo))
             }
 
             override fun fail() {
@@ -146,9 +226,9 @@ class MapActivity : BaseActivity() {
         MapManager.setLocationSwitch(true, object : MapManager.OnLocationResultListener{
             override fun result(la: Double, lo: Double, city: String, address: String, desc: String) {
                 MapManager.setCenterMap(la, lo)
-                MapManager.searchNearby(keyword, la, lo, object : MapManager.OnPoiResultListener{
+                MapManager.searchNearby(keyword, la, lo, 10, object : MapManager.OnPoiResultListener{
                     override fun result(result: PoiResult) {
-                        L.i("Poi成功")
+                        //在UI上绘制视图
                     }
 
                 })

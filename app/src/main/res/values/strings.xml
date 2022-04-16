@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">生活助手</string>
 
-    <string name="text_voice_run_text">正在运行</string>
+    <string name="text_voice_run_text">生活助手正在运行</string>
     <string name="text_voice_wakeup_text">小爱同学</string>
     <string name="text_voice_wakeup_tips">正在聆听…</string>
     <string name="text_voice_app_open">正在为你打开%s</string>
@@ -10,7 +10,7 @@
     <string name="text_voice_app_not_uninstall">很抱歉，无法为你卸载%s</string>
     <string name="text_voice_app_option">正在操作%s</string>
     <string name="text_voice_back_text">正在为你执行返回操作</string>
-    <string name="text_voice_home_text">正在为你返回主页</string>
+    <string name="text_voice_home_text">正在为你返回到主页</string>
     <string name="text_voice_volume_add">正在增加音量</string>
     <string name="text_voice_volume_sub">正在减小音量</string>
     <string name="text_voice_query_con_tell_info">正在为你查询%s的详情</string>
@@ -26,8 +26,8 @@
     <!--主页列表图标-->
     <string-array name="MainIconArray">
         <item>@drawable/img_main_weather</item>
-        <item>@drawable/img_main_contell</item>
-        <item>@drawable/img_main_joke_icon</item>
+<!--        <item>@drawable/img_main_contell</item>-->
+<!--        <item>@drawable/img_main_joke_icon</item>-->
         <item>@drawable/img_main_map_icon</item>
         <item>@drawable/img_main_app_manager</item>
         <item>@drawable/img_main_voice_setting</item>
@@ -39,12 +39,24 @@
     <!--主页列表颜色-->
     <array name="MainColorArray">
         <item>@color/colorWeather</item>
-        <item>@color/colorConstell</item>
-        <item>@color/colorJoke</item>
+<!--        <item>@color/colorConstell</item>-->
+<!--        <item>@color/colorJoke</item>-->
         <item>@color/colorMap</item>
         <item>@color/colorAppManager</item>
         <item>@color/colorVoiceSetting</item>
         <item>@color/colorAppSystemSetting</item>
         <item>@color/colorAppDeveloper</item>
+    </array>
+
+    <!--主页列表功能描述-->
+    <array name="MainDescArray">
+        <item>查询全国天气、掌握所在城市的天气详情</item>
+<!--        <item>星座个性分析、星座开运方法、星座运势、配对、查询以及心理测试、塔罗牌、在线算命、风水、生肖等星相命理相关内容。</item>-->
+<!--        <item>开心一刻,笑话大全,爆笑冷笑话精选… ,经典笑话尽在笑掉大牙!海量笑话内容每日定时更新,给您带来更多快乐。</item>-->
+        <item>查看实时路况您的出行指南、生活助手</item>
+        <item>该功能用于实现对应用的管理</item>
+        <item>按自己习惯设置语音方式为自由说话或按键说话,</item>
+        <item>根据您的使用习惯进行设立</item>
+        <item>通过这个功能可以重新定义自己的手机,</item>
     </array>
 </resources>
