@@ -8,8 +8,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:background="#9C8FA6"
         android:padding="5dp"
+        android:textSize="20sp"
         android:text="语速"
         android:textColor="@color/white"/>
 
@@ -23,8 +24,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:background="#9C8FA6"
         android:padding="5dp"
+        android:textSize="20sp"
         android:text="音量"
         android:textColor="@color/white"/>
 
@@ -38,7 +40,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:background="#9C8FA6"
+        android:textSize="20sp"
         android:padding="5dp"
         android:text="发音人"
         android:textColor="@color/white"/>
@@ -53,5 +56,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="测试"
+        android:textSize="24sp"
         android:id="@+id/btn_test"/>
 </LinearLayout>

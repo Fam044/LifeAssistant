@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">设置</string>
+    <string name="text_version_ui">V%s</string>
+
+    <string name="text_is_play_welcome">欢迎词开关</string>
+    <string name="text_github_address">GitHub地址</string>
+    <string name="text_github_address_link">github.com/Fam044/LifeAssistant</string>
+    <string name="text_app_version">App版本</string>
 </resources>

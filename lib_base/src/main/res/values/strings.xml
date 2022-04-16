@@ -166,4 +166,11 @@
         <item>1月20日至2月18日，象征着叛逆</item>
         <item>2月19日至3月20日，象征着复杂</item>
     </array>
+
+    <string name="text_version_ui">V%s</string>
+
+    <string name="text_is_play_welcome">欢迎词开关</string>
+    <string name="text_github_address">GitHub地址</string>
+    <string name="text_github_address_link">github.com/Fam044/LifeAssistant</string>
+    <string name="text_app_version">App版本</string>
 </resources>
