@@ -62,7 +62,7 @@ class CitySelectActivity: BaseActivity() {
 
     private fun initListView(){
         mCityListView.layoutManager = LinearLayoutManager(this)
-        mCityListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+//        mCityListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         mCitySelectAdapter = CommonAdapter(mList, object: CommonAdapter.OnMoreBindDataListener<CitySelectBean>{
             override fun onBindViewHolder(
                 model: CitySelectBean,
@@ -100,6 +100,7 @@ class CitySelectActivity: BaseActivity() {
         })
         mCityListView.adapter = mCitySelectAdapter
 
+        //滚动监听
         mCityListView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -142,7 +143,6 @@ class CitySelectActivity: BaseActivity() {
             override fun getLayoutId(type: Int): Int {
                 return R.layout.layout_hot_city_item
             }
-
         })
     }
 
@@ -153,12 +153,11 @@ class CitySelectActivity: BaseActivity() {
         addHot()
         //其他操作 标题+内容
         city.result.forEach {
-
                 if (!mListTitle.contains(it.province)){
                     addTitle(it.province)
                 }
                 //添加内容
-                addContent("${it.city}市${it.district}", it.district, it.province)
+                addContent("${it.city} - ${it.district}", it.district, it.province)
         }
 
         mCitySelectView.setCity(mListTitle)
@@ -174,7 +173,6 @@ class CitySelectActivity: BaseActivity() {
                 //计算值
                 findTextIndex(text)
             }
-
         })
     }
 
@@ -186,27 +184,30 @@ class CitySelectActivity: BaseActivity() {
                     mCityListView.scrollToPosition(index)
                     return@forEachIndexed
                 }
-
             }
         }
     }
 
+    //添加标题
     private fun addTitle(title: String){
         val data = CitySelectBean(mTypeTitle, title, "", "", title)
         mList.add(data)
         mListTitle.add(title)
     }
 
+    //添加内容
     private fun addContent(content: String, city: String, province: String){
         val data = CitySelectBean(mTypeContent, "", content, city, province)
         mList.add(data)
     }
 
+    //添加热门城市
     private fun addHot(){
         val data = CitySelectBean(mTypeHotCity, "", "", "", "热门城市")
         mList.add(data)
     }
 
+    //结束回调
     private fun finishResult(city: String){
         val intent = Intent()
         intent.putExtra("city", city)

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="30dp"
     android:id="@+id/mTvCityTitle"
-    android:background="#666666"
+    android:background="#9C8FA6"
     android:gravity="center_vertical"
     android:paddingStart="10dp"
     android:paddingEnd="0dp"

@@ -4,9 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.imooc.module_weather.R
 
 class CitySelectView: View {
     //Height
@@ -19,7 +21,6 @@ class CitySelectView: View {
     private val mList = ArrayList<String>()
     //间距的高
     private var itemHeight = 0
-
     //选中的下标
     private var checkIndex = -1
     //选中的文本大小
@@ -44,6 +45,8 @@ class CitySelectView: View {
     private fun initView(){
         //抗锯齿
         mPaint.isAntiAlias = true
+        //粗体
+        mPaint.typeface = Typeface.DEFAULT_BOLD
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -52,7 +55,6 @@ class CitySelectView: View {
             drawCity(it)
         }
     }
-
 
     private fun drawCity(canvas: Canvas){
         if (mList.size > 0){
@@ -86,7 +88,14 @@ class CitySelectView: View {
                     val oldCheck = checkIndex
                     val check = event.y / viewHeight * mList.size
                     if (oldCheck != checkTextColor){
-                        mOnViewResultListener?.valueInput(mList[check.toInt()])
+                        var index = check.toInt()
+                        //防止数组越界
+                        if (index < 0){
+                            index = 0
+                        }else if (index >= mList.size){
+                            index = mList.size - 1
+                        }
+                        mOnViewResultListener?.valueInput(mList[index])
                         //往外传递数据
                         checkIndex = check.toInt()
                         invalidate()
@@ -112,7 +121,7 @@ class CitySelectView: View {
         invalidate()
     }
 
-
+    //设置选中
     fun setCheckIndex(index: Int){
         checkIndex = index
         invalidate()
